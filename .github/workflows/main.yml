@@ -20,7 +20,6 @@ jobs:
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           server-dir: /
-          
           # remote-dir: 'server-dir'  # Replace with the correct path
           # local-dir: ./  # Deploy the entire repository
           # delete-files: false #Whether to delete existing files
