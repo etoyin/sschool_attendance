@@ -21,6 +21,6 @@ jobs:
       uses: Samkirkland/FTP-Deploy-Action@4.1.0
       with:
         server: ftp.marcorybaptistschools.org
-        username: ${{ secrets. USERNAME}}
-        password: ${{ secrets. PASSWORD }}
+        username: ${{ secrets.USERNAME}}
+        password: ${{ secrets.PASSWORD }}
         server-dir: /
