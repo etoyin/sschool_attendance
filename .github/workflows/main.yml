@@ -1,26 +1,24 @@
-name: Deploy wesite on push
-# Controls when the workflow will run
+name: Deploy to FTP
+
 on:
-# Triggers the workflow on push or pull request events but only for the main branch
   push:
     branches:
-      - main
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+      - main # Trigger on pushes to the main branch
+
 jobs:
-# This workflow contains a single job called "build"
-  web-deploy:
-    name: Deploy
-# The type of runner that the job will run on
+  deploy:
     runs-on: ubuntu-latest
-# Steps represent a sequence of tasks that will be executed as part of the job
+
     steps:
-    - name: Get latest code
-# Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      uses: actions/checkout@v2
-    - name: Sync files
-      uses: Samkirkland/FTP-Deploy-Action@4.1.0
-      with:
-        server: ftp.marcorybaptistschools.org
-        username: ${{ secrets.USERNAME}}
-        password: ${{ secrets.PASSWORD }}
-        server-dir: /
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Deploy to FTP server
+        uses: SamKirkland/FTP-Deploy-Action@v4
+        with:
+          server: ${{ secrets.SERVER }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          remote-dir: /codsunday  # Replace with the correct path
+          local-dir: .  # Deploy the entire repository
+          delete-files: false #Whether to delete existing files
