@@ -20,5 +20,5 @@ jobs:
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           remote-dir: /codsunday  # Replace with the correct path
-          local-dir: .  # Deploy the entire repository
+          local-dir: ./  # Deploy the entire repository
           delete-files: false #Whether to delete existing files
