@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RCCG COD Sunday School Classes</title>
+    <link rel="stylesheet" href="/css/output.css">
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <%- include('partials/menu') %>
+    <div class="container mx-auto px-4 py-8">
+        <header class="mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-center text-primary">RCCG COD Sunday School Classes</h1>
+            <p class="text-center text-gray-600 mt-2">View and manage all classes</p>
+        </header>
+        
+        <main>
+            <div class="max-w-6xl mx-auto">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-semibold text-primary">All Classes</h2>
+                    <div class="relative">
+                        <input type="text" id="class-search" placeholder="Search classes..." class="px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <% if (classes && classes.length > 0) { %>
+                        <% classes.forEach(cls => { %>
+                            <div class="bg-white rounded-lg shadow-lg overflow-hidden transition-transform duration-300 hover:transform hover:scale-105 class-card">
+                                <div class="bg-primary text-white py-3 px-4">
+                                    <div class="flex justify-between items-center">
+                                        <h3 class="text-xl font-semibold"><%= cls.name %></h3>
+                                        <div class="bg-white text-primary rounded-full h-8 w-8 flex items-center justify-center font-bold">
+                                            <%= cls.studentCount %>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="p-6">
+                                    <div class="mb-6">
+                                        <div class="flex items-center mb-2">
+                                            <svg class="w-5 h-5 text-primary mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                            </svg>
+                                            <span class="text-gray-700 font-medium"><%= cls.studentCount %> Students</span>
+                                        </div>
+                                        <% if (cls.description) { %>
+                                            <p class="text-gray-600 h-16 overflow-hidden"><%= cls.description %></p>
+                                        <% } else { %>
+                                            <p class="text-gray-400 h-16 overflow-hidden italic">No description available</p>
+                                        <% } %>
+                                    </div>
+                                    <a href="/class/<%= cls.id %>" class="block w-full bg-secondary hover:bg-secondary-dark text-white text-center font-bold py-2 px-4 rounded transition-colors duration-200">
+                                        View Class
+                                    </a>
+                                </div>
+                            </div>
+                        <% }); %>
+                    <% } else { %>
+                        <div class="col-span-full bg-white rounded-lg shadow-lg p-8 text-center">
+                            <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <p class="text-gray-600 text-lg">No classes found.</p>
+                            <p class="text-gray-500 mt-2">Contact an administrator to add classes.</p>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </main>
+        
+        <footer class="mt-12 text-center text-gray-500 text-sm">
+            <p>&copy; 2025 RCCG COD Sunday School Attendance</p>
+        </footer>
+    </div>
+
+    <script>
+        // Simple client-side search functionality
+        document.getElementById('class-search').addEventListener('keyup', function() {
+            const searchTerm = this.value.toLowerCase();
+            const cards = document.querySelectorAll('.class-card');
+            
+            cards.forEach(card => {
+                const title = card.querySelector('h3').textContent.toLowerCase();
+                const description = card.querySelector('p').textContent.toLowerCase();
+                
+                if (title.includes(searchTerm) || description.includes(searchTerm)) {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

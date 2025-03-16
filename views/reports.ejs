@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RCCG COD Sunday School Reports</title>
+    <link rel="stylesheet" href="/css/output.css">
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <%- include('partials/menu') %>
+    <div class="container mx-auto px-4 py-8">
+        <header class="mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-center text-primary">RCCG COD Sunday School Reports</h1>
+            <p class="text-center text-gray-600 mt-2">View attendance reports and analytics</p>
+        </header>
+        
+        <main>
+            <div class="max-w-6xl mx-auto">
+                <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+                    <h3 class="text-xl font-semibold mb-4 text-primary border-b pb-2">Generate Report</h3>
+                    
+                    <div class="mb-6">
+                        <div class="flex space-x-4">
+                            <button id="individual-report-btn" class="bg-primary text-white px-4 py-2 rounded-lg font-medium">Individual Report</button>
+                            <button id="class-report-btn" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium">Class Report</button>
+                        </div>
+                    </div>
+                    
+                    <form id="report-form" class="mb-4">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div>
+                                <label for="class" class="block text-gray-700 text-sm font-bold mb-2">Class:</label>
+                                <select id="class" name="class" class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200">
+                                    <option value="">Select a class</option>
+                                    <% if (classes && classes.length > 0) { %>
+                                        <% classes.forEach(cls => { %>
+                                            <option value="<%= cls.id %>"><%= cls.name %></option>
+                                        <% }); %>
+                                    <% } %>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="start-date" class="block text-gray-700 text-sm font-bold mb-2">Start Date:</label>
+                                <input type="date" id="start-date" name="start-date" class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200">
+                            </div>
+                            <div>
+                                <label for="end-date" class="block text-gray-700 text-sm font-bold mb-2">End Date:</label>
+                                <input type="date" id="end-date" name="end-date" class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200">
+                            </div>
+                        </div>
+                        <div class="mt-6 flex justify-center">
+                            <button type="submit" class="bg-primary hover:bg-primary-light text-white font-bold py-3 px-6 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-primary-light focus:ring-opacity-50 transition-all duration-200 flex items-center">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                                Generate Report
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+                <div id="class-report-form" class="bg-white rounded-lg shadow-lg p-6 mb-8 hidden">
+                    <h3 class="text-xl font-semibold mb-4 text-primary border-b pb-2">Generate Class Report</h3>
+                    <form id="class-report-form-inner" class="mb-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="class-select" class="block text-gray-700 text-sm font-bold mb-2">Class:</label>
+                                <select id="class-select" name="class-select" class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200">
+                                    <option value="">Select a class</option>
+                                    <% if (classes && classes.length > 0) { %>
+                                        <% classes.forEach(cls => { %>
+                                            <option value="<%= cls.id %>"><%= cls.name %></option>
+                                        <% }); %>
+                                    <% } %>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="month-select" class="block text-gray-700 text-sm font-bold mb-2">Month:</label>
+                                <select id="month-select" name="month-select" class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200">
+                                    <option value="1">January</option>
+                                    <option value="2">February</option>
+                                    <option value="3">March</option>
+                                    <option value="4">April</option>
+                                    <option value="5">May</option>
+                                    <option value="6">June</option>
+                                    <option value="7">July</option>
+                                    <option value="8">August</option>
+                                    <option value="9">September</option>
+                                    <option value="10">October</option>
+                                    <option value="11">November</option>
+                                    <option value="12">December</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mt-6 flex justify-center">
+                            <button type="submit" class="bg-secondary hover:bg-secondary-dark text-white font-bold py-3 px-6 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-secondary-dark focus:ring-opacity-50 transition-all duration-200 flex items-center">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                                Generate Class Report
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+                <div id="report-results" class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-xl font-semibold mb-4 text-primary border-b pb-2">Individual Report Results</h3>
+                    
+                    <div id="report-placeholder" class="py-8 text-center">
+                        <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        <p class="text-gray-600 text-lg">Select a class and date range to generate a report</p>
+                    </div>
+                    
+                    <div id="report-data" class="hidden mt-4">
+                        <div class="mb-8">
+                            <h4 class="text-lg font-semibold mb-4">Summary</h4>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                                <div class="bg-gradient-to-br from-primary-light to-primary text-white p-6 rounded-lg shadow-md">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="text-blue-100 text-sm font-medium">Total Students</p>
+                                            <p id="total-students" class="text-3xl font-bold mt-1">0</p>
+                                        </div>
+                                        <svg class="w-10 h-10 text-blue-300 opacity-75" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="bg-gradient-to-br from-primary to-primary-dark text-white p-6 rounded-lg shadow-md">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="text-green-100 text-sm font-medium">Average Attendance</p>
+                                            <p id="average-attendance" class="text-3xl font-bold mt-1">0%</p>
+                                        </div>
+                                        <svg class="w-10 h-10 text-green-300 opacity-75" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="bg-gradient-to-br from-secondary to-secondary-dark text-white p-6 rounded-lg shadow-md">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="text-yellow-100 text-sm font-medium">Total Days</p>
+                                            <p id="total-days" class="text-3xl font-bold mt-1">0</p>
+                                        </div>
+                                        <svg class="w-10 h-10 text-yellow-300 opacity-75" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="individual-attendance-section">
+                            <h4 class="text-lg font-semibold mb-4">Attendance Details</h4>
+                            <div class="overflow-x-auto rounded-lg shadow">
+                                <table class="min-w-full bg-white border-collapse">
+                                    <thead>
+                                        <tr class="bg-primary text-white">
+                                            <th class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider border-b border-gray-200">Student</th>
+                                            <th class="px-6 py-3 text-center text-sm font-semibold uppercase tracking-wider border-b border-gray-200">Present Days</th>
+                                            <th class="px-6 py-3 text-center text-sm font-semibold uppercase tracking-wider border-b border-gray-200">Absent Days</th>
+                                            <th class="px-6 py-3 text-center text-sm font-semibold uppercase tracking-wider border-b border-gray-200">Attendance Rate</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="attendance-details" class="divide-y divide-gray-200">
+                                        <!-- Attendance details will be added here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="class-report-results" class="bg-white rounded-lg shadow-lg p-6 hidden">
+                    <h3 class="text-xl font-semibold mb-4 text-primary border-b pb-2">Class Report Results</h3>
+                    
+                    <div id="class-report-placeholder" class="py-8 text-center">
+                        <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        <p class="text-gray-600 text-lg">Select a class and month to generate a report</p>
+                    </div>
+                    
+                    <div id="class-report-data" class="hidden mt-4">
+                        <div class="mb-4 flex justify-between items-center">
+                            <h4 class="text-lg font-semibold">Class Attendance Report</h4>
+                            <button id="print-report" class="bg-primary hover:bg-primary-light text-white px-4 py-2 rounded-lg flex items-center">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+                                </svg>
+                                Print Report
+                            </button>
+                        </div>
+                        
+                        <div class="overflow-x-auto rounded-lg shadow">
+                            <table id="class-attendance-table" class="min-w-full bg-white border-collapse">
+                                <thead>
+                                    <tr class="bg-primary text-white">
+                                        <th class="px-4 py-3 text-left text-sm font-semibold uppercase tracking-wider border-b border-gray-200">Name</th>
+                                        <th class="px-4 py-3 text-left text-sm font-semibold uppercase tracking-wider border-b border-gray-200">Class</th>
+                                        <th class="px-4 py-3 text-left text-sm font-semibold uppercase tracking-wider border-b border-gray-200">Phone</th>
+                                        <!-- Date columns will be added dynamically -->
+                                    </tr>
+                                </thead>
+                                <tbody id="class-attendance-details" class="divide-y divide-gray-200">
+                                    <!-- Class attendance details will be added here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <footer class="mt-12 text-center text-gray-500 text-sm">
+            <p>&copy; 2025 RCCG COD Sunday School Attendance</p>
+        </footer>
+    </div>
+
+    <script>
+        // Toggle between individual and class report forms
+        document.getElementById('individual-report-btn').addEventListener('click', function() {
+            this.classList.remove('bg-gray-200', 'text-gray-700');
+            this.classList.add('bg-primary', 'text-white');
+            
+            document.getElementById('class-report-btn').classList.remove('bg-primary', 'text-white');
+            document.getElementById('class-report-btn').classList.add('bg-gray-200', 'text-gray-700');
+            
+            document.getElementById('report-form').classList.remove('hidden');
+            document.getElementById('class-report-form').classList.add('hidden');
+            
+            document.getElementById('report-results').classList.remove('hidden');
+            document.getElementById('class-report-results').classList.add('hidden');
+        });
+        
+        document.getElementById('class-report-btn').addEventListener('click', function() {
+            this.classList.remove('bg-gray-200', 'text-gray-700');
+            this.classList.add('bg-primary', 'text-white');
+            
+            document.getElementById('individual-report-btn').classList.remove('bg-primary', 'text-white');
+            document.getElementById('individual-report-btn').classList.add('bg-gray-200', 'text-gray-700');
+            
+            document.getElementById('report-form').classList.add('hidden');
+            document.getElementById('class-report-form').classList.remove('hidden');
+            
+            document.getElementById('report-results').classList.add('hidden');
+            document.getElementById('class-report-results').classList.remove('hidden');
+        });
+        
+        // Print report functionality
+        document.getElementById('print-report').addEventListener('click', function() {
+            window.print();
+        });
+        
+        // Individual report form submission
+        document.getElementById('report-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const classId = document.getElementById('class').value;
+            const startDate = document.getElementById('start-date').value;
+            const endDate = document.getElementById('end-date').value;
+            
+            if (!classId || !startDate || !endDate) {
+                alert('Please select a class and date range');
+                return;
+            }
+            
+            // Show loading state
+            document.getElementById('report-placeholder').innerHTML = `
+                <div class="flex justify-center items-center py-8">
+                    <svg class="animate-spin h-10 w-10 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span class="ml-3 text-gray-600">Loading report data...</span>
+                </div>
+            `;
+            
+            // Fetch attendance data for the selected class and date range
+            fetch(`/api/classes/${classId}/attendance?startDate=${startDate}&endDate=${endDate}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Hide placeholder and show report data
+                    document.getElementById('report-placeholder').classList.add('hidden');
+                    document.getElementById('report-data').classList.remove('hidden');
+                    
+                    // Update summary
+                    document.getElementById('total-students').textContent = data.length;
+                    
+                    // Calculate total days
+                    const allDates = [...new Set(
+                        data.flatMap(item => item.attendance.map(a => a.date))
+                    )];
+                    document.getElementById('total-days').textContent = allDates.length;
+                    
+                    // Calculate average attendance
+                    let totalPresent = 0;
+                    let totalAttendance = 0;
+                    
+                    data.forEach(item => {
+                        item.attendance.forEach(a => {
+                            totalAttendance++;
+                            if (a.present) {
+                                totalPresent++;
+                            }
+                        });
+                    });
+                    
+                    const averageAttendance = totalAttendance > 0 
+                        ? Math.round((totalPresent / totalAttendance) * 100) 
+                        : 0;
+                    document.getElementById('average-attendance').textContent = `${averageAttendance}%`;
+                    
+                    // Update attendance details
+                    const attendanceDetails = document.getElementById('attendance-details');
+                    attendanceDetails.innerHTML = '';
+                    
+                    if (data.length === 0) {
+                        const emptyRow = document.createElement('tr');
+                        emptyRow.innerHTML = `
+                            <td colspan="4" class="px-6 py-4 text-center text-gray-500">No attendance data available for the selected period</td>
+                        `;
+                        attendanceDetails.appendChild(emptyRow);
+                        return;
+                    }
+                    
+                    data.forEach((item, index) => {
+                        const student = item.student;
+                        const attendance = item.attendance;
+                        
+                        const presentDays = attendance.filter(a => a.present).length;
+                        const absentDays = attendance.length - presentDays;
+                        const attendanceRate = attendance.length > 0 
+                            ? Math.round((presentDays / attendance.length) * 100) 
+                            : 0;
+                        
+                        // Determine row color based on attendance rate
+                        let rateColor = 'text-red-600';
+                        if (attendanceRate >= 80) {
+                            rateColor = 'text-green-600';
+                        } else if (attendanceRate >= 50) {
+                            rateColor = 'text-yellow-600';
+                        }
+                        
+                        const row = document.createElement('tr');
+                        row.className = index % 2 === 0 ? 'bg-white' : 'bg-gray-50';
+                        row.innerHTML = `
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${student.firstName} ${student.lastName}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-green-600 font-semibold">${presentDays}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-red-600 font-semibold">${absentDays}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-center ${rateColor} font-bold">${attendanceRate}%</td>
+                        `;
+                        attendanceDetails.appendChild(row);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching attendance data:', error);
+                    document.getElementById('report-placeholder').innerHTML = `
+                        <div class="text-center py-8">
+                            <svg class="w-16 h-16 text-red-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <p class="text-red-600 text-lg font-semibold">Error generating report</p>
+                            <p class="text-gray-600 mt-2">Please try again or contact an administrator</p>
+                        </div>
+                    `;
+                });
+        });
+        
+        // Class report form submission
+        document.getElementById('class-report-form-inner').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const classId = document.getElementById('class-select').value;
+            const month = document.getElementById('month-select').value;
+            
+            if (!classId || !month) {
+                alert('Please select a class and month');
+                return;
+            }
+            
+            // Show loading state
+            document.getElementById('class-report-placeholder').innerHTML = `
+                <div class="flex justify-center items-center py-8">
+                    <svg class="animate-spin h-10 w-10 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span class="ml-3 text-gray-600">Loading class report data...</span>
+                </div>
+            `;
+            
+            // Get the current year
+            const year = new Date().getFullYear();
+            
+            // Calculate the start and end dates for the selected month
+            const startDate = `${year}-${month.padStart(2, '0')}-01`;
+            const lastDay = new Date(year, month, 0).getDate();
+            const endDate = `${year}-${month.padStart(2, '0')}-${lastDay}`;
+            
+            // Fetch attendance data for the selected class and month
+            fetch(`/api/classes/${classId}/attendance?startDate=${startDate}&endDate=${endDate}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Hide placeholder and show report data
+                    document.getElementById('class-report-placeholder').classList.add('hidden');
+                    document.getElementById('class-report-data').classList.remove('hidden');
+                    
+                    // Get all unique dates from the attendance data
+                    const allDates = [...new Set(
+                        data.flatMap(item => item.attendance.map(a => a.date))
+                    )].sort();
+                    
+                    // Get the class name
+                    const className = document.getElementById('class-select').options[document.getElementById('class-select').selectedIndex].text;
+                    
+                    // Update the table header with date columns
+                    const tableHeader = document.querySelector('#class-attendance-table thead tr');
+                    
+                    // Clear existing date columns
+                    while (tableHeader.children.length > 3) {
+                        tableHeader.removeChild(tableHeader.lastChild);
+                    }
+                    
+                    // Add date columns to the header
+                    allDates.forEach(date => {
+                        const th = document.createElement('th');
+                        th.className = 'px-4 py-3 text-center text-sm font-semibold uppercase tracking-wider border-b border-gray-200';
+                        
+                        // Format the date as DD/MM
+                        const dateObj = new Date(date);
+                        const formattedDate = `${dateObj.getDate().toString().padStart(2, '0')}/${(dateObj.getMonth() + 1).toString().padStart(2, '0')}`;
+                        
+                        th.textContent = formattedDate;
+                        tableHeader.appendChild(th);
+                    });
+                    
+                    // Update the table body with student attendance data
+                    const tableBody = document.getElementById('class-attendance-details');
+                    tableBody.innerHTML = '';
+                    
+                    if (data.length === 0) {
+                        const emptyRow = document.createElement('tr');
+                        emptyRow.innerHTML = `
+                            <td colspan="${3 + allDates.length}" class="px-4 py-4 text-center text-gray-500">No attendance data available for the selected period</td>
+                        `;
+                        tableBody.appendChild(emptyRow);
+                        return;
+                    }
+                    
+                    data.forEach((item, index) => {
+                        const student = item.student;
+                        const attendance = item.attendance;
+                        
+                        const row = document.createElement('tr');
+                        row.className = index % 2 === 0 ? 'bg-white' : 'bg-gray-50';
+                        
+                        // Add student name, class, and phone columns
+                        row.innerHTML = `
+                            <td class="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${student.firstName} ${student.lastName}</td>
+                            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">${className}</td>
+                            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">${student.contactNumber || 'N/A'}</td>
+                        `;
+                        
+                        // Add attendance for each date
+                        allDates.forEach(date => {
+                            const attendanceForDate = attendance.find(a => a.date === date);
+                            const td = document.createElement('td');
+                            td.className = 'px-4 py-4 whitespace-nowrap text-center';
+                            
+                            if (attendanceForDate && attendanceForDate.present) {
+                                td.innerHTML = '<span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-green-100 text-green-800 font-bold">✓</span>';
+                            } else {
+                                td.innerHTML = '<span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-red-100 text-red-800 font-bold">✗</span>';
+                            }
+                            
+                            row.appendChild(td);
+                        });
+                        
+                        tableBody.appendChild(row);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching class attendance data:', error);
+                    document.getElementById('class-report-placeholder').innerHTML = `
+                        <div class="text-center py-8">
+                            <svg class="w-16 h-16 text-red-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <p class="text-red-600 text-lg font-semibold">Error generating class report</p>
+                            <p class="text-gray-600 mt-2">Please try again or contact an administrator</p>
+                        </div>
+                    `;
+                });
+        });
+    </script>
+</body>
+</html>

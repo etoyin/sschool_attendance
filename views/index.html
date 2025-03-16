@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RCCG COD Sunday School Attendance</title>
+    <link rel="stylesheet" href="/css/output.css">
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <header class="mb-8">
+            <h1 class="text-3xl font-bold text-center text-blue-600">RCCG COD Sunday School Attendance</h1>
+            <p class="text-center text-gray-600 mt-2">Track and manage Sunday School attendance</p>
+        </header>
+        
+        <main>
+            <div class="container mx-auto px-4">
+                <h2 class="text-2xl font-semibold mb-4">Select a Class</h2>
+                <ul id="class-list" class="list-disc pl-5">
+                    <li>Loading classes...</li>
+                </ul>
+            </div>
+        </main>
+        
+        <footer class="mt-8 text-center text-gray-500 text-sm">
+            <p>&copy; 2025 RCCG COD Sunday School Attendance</p>
+        </footer>
+    </div>
+
+    <script>
+        fetch('/api/classes')
+            .then(response => response.json())
+            .then(classes => {
+                const classList = document.getElementById('class-list');
+                classList.innerHTML = '';
+                classes.forEach(cls => {
+                    const listItem = document.createElement('li');
+                    const link = document.createElement('a');
+                    link.href = `/class.html?classId=${cls.id}`;
+                    link.textContent = cls.name;
+                    listItem.appendChild(link);
+                    classList.appendChild(listItem);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching classes:', error);
+                const classList = document.getElementById('class-list');
+                classList.innerHTML = 'Error loading classes.';
+            });
+    </script>
+</body>
+</html>

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class Attendance</title>
+    <link rel="stylesheet" href="/css/output.css">
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <header class="mb-8">
+            <h1 id="class-heading" class="text-3xl font-bold text-center text-blue-600">Class Attendance</h1>
+            <p class="text-center text-gray-600 mt-2">Track and manage student attendance</p>
+        </header>
+
+        <main>
+            <div class="mb-8">
+                <h2 class="text-xl font-semibold mb-2">Student List</h2>
+                <ul id="student-list" class="list-disc pl-5">
+                    <li>Loading students...</li>
+                </ul>
+            </div>
+
+            <div class="mb-8">
+                <h2 class="text-xl font-semibold mb-2">Mark Attendance</h2>
+                <p>Click on a student's name to mark their attendance for today:</p>
+                <div id="attendance-marking" class="flex flex-wrap gap-2">
+                    Loading attendance marking...
+                </div>
+            </div>
+
+            <div class="mb-8">
+                <h2 class="text-xl font-semibold mb-2">Attendance Table</h2>
+                <table id="attendance-table" class="table-auto w-full">
+                    <thead>
+                        <tr>
+                            <th class="px-4 py-2">Name</th>
+                            <th class="px-4 py-2">Phone Number</th>
+                            <th class="px-4 py-2">Class</th>
+                            <!-- Dates will be added here -->
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Student attendance data will be added here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div>
+                <h2 class="text-xl font-semibold mb-2">Register New Student</h2>
+                <form id="new-student-form" class="max-w-sm mx-auto">
+                    <div class="mb-4">
+                        <label for="firstName" class="block text-gray-700 text-sm font-bold mb-2">First Name:</label>
+                        <input type="text" id="firstName" name="firstName" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    </div>
+                    <div class="mb-4">
+                        <label for="lastName" class="block text-gray-700 text-sm font-bold mb-2">Last Name:</label>
+                        <input type="text" id="lastName" name="lastName" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    </div>
+                    <div class="mb-4">
+                        <label for="gender" class="block text-gray-700 text-sm font-bold mb-2">Gender:</label>
+                        <select id="gender" name="gender" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label for="age" class="block text-gray-700 text-sm font-bold mb-2">Age:</label>
+                        <input type="number" id="age" name="age" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    </div>
+                    <div class="mb-4">
+                        <label for="contactNumber" class="block text-gray-700 text-sm font-bold mb-2">Contact Number:</label>
+                        <input type="text" id="contactNumber" name="contactNumber" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    </div>
+                    <div class="mb-4">
+                        <label for="email" class="block text-gray-700 text-sm font-bold mb-2">Email:</label>
+                        <input type="email" id="email" name="email" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    </div>
+                    <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Register</button>
+                </form>
+            </div>
+        </main>
+
+        <footer class="mt-8 text-center text-gray-500 text-sm">
+            <p>&copy; 2025 RCCG COD Sunday School Attendance</p>
+        </footer>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const classId = urlParams.get('classId');
+
+        // Fetch class details
+        fetch(`/api/classes/${classId}`)
+            .then(response => response.json())
+            .then(cls => {
+                document.getElementById('class-heading').textContent = `Class ${cls.name} Attendance`;
+            })
+            .catch(error => {
+                console.error('Error fetching class details:', error);
+                document.getElementById('class-heading').textContent = 'Class Attendance';
+            });
+
+        // Fetch student list
+        fetch(`/api/classes/${classId}/students`)
+            .then(response => response.json())
+            .then(students => {
+                const studentList = document.getElementById('student-list');
+                studentList.innerHTML = '';
+                const attendanceMarking = document.getElementById('attendance-marking');
+                attendanceMarking.innerHTML = '';
+
+                students.forEach(student => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = `${student.firstName} ${student.lastName}`;
+                    studentList.appendChild(listItem);
+
+                    const attendanceButton = document.createElement('button');
+                    attendanceButton.textContent = `${student.firstName} ${student.lastName}`;
+                    attendanceButton.classList.add('bg-green-500', 'hover:bg-green-700', 'text-white', 'font-bold', 'py-2', 'px-4', 'rounded');
+                    attendanceButton.addEventListener('click', () => {
+                        markAttendance(student.id);
+                    });
+                    attendanceMarking.appendChild(attendanceButton);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching students:', error);
+                const studentList = document.getElementById('student-list');
+                studentList.innerHTML = 'Error loading students.';
+                const attendanceMarking = document.getElementById('attendance-marking');
+                attendanceMarking.innerHTML = 'Error loading attendance marking.';
+            });
+
+        // Mark attendance function
+        function markAttendance(studentId) {
+            const today = new Date().toISOString().slice(0, 10);
+            fetch(`/api/students/${studentId}/attendance`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ date: today, present: true, classId: classId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Attendance marked:', data);
+                alert('Attendance marked successfully!');
+            })
+            .catch(error => {
+                console.error('Error marking attendance:', error);
+                alert('Error marking attendance.');
+            });
+        }
+
+        // New student form submission
+        document.getElementById('new-student-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const firstName = document.getElementById('firstName').value;
+            const lastName = document.getElementById('lastName').value;
+            const gender = document.getElementById('gender').value;
+            const age = document.getElementById('age').value;
+            const contactNumber = document.getElementById('contactNumber').value;
+            const email = document.getElementById('email').value;
+
+            fetch('/api/students', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    firstName,
+                    lastName,
+                    gender,
+                    age,
+                    classId: classId,
+                    contactNumber,
+                    email
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('New student registered:', data);
+                alert('New student registered successfully!');
+                // Refresh student list
+                fetch(`/api/classes/${classId}/students`)
+                    .then(response => response.json())
+                    .then(students => {
+                        const studentList = document.getElementById('student-list');
+                        studentList.innerHTML = '';
+                        const attendanceMarking = document.getElementById('attendance-marking');
+                        attendanceMarking.innerHTML = '';
+
+                        students.forEach(student => {
+                            const listItem = document.createElement('li');
+                            listItem.textContent = `${student.firstName} ${student.lastName}`;
+                            studentList.appendChild(listItem);
+
+                            const attendanceButton = document.createElement('button');
+                            attendanceButton.textContent = `${student.firstName} ${student.lastName}`;
+                            attendanceButton.classList.add('bg-green-500', 'hover:bg-green-700', 'text-white', 'font-bold', 'py-2', 'px-4', 'rounded');
+                            attendanceButton.addEventListener('click', () => {
+                                markAttendance(student.id);
+                            });
+                            attendanceMarking.appendChild(attendanceButton);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error fetching students:', error);
+                        const studentList = document.getElementById('student-list');
+                        studentList.innerHTML = 'Error loading students.';
+                        const attendanceMarking = document.getElementById('attendance-marking');
+                        attendanceMarking.innerHTML = 'Error loading attendance marking.';
+                    });
+            })
+            .catch(error => {
+                console.error('Error registering student:', error);
+                alert('Error registering student.');
+            });
+        });
+
+        // Fetch attendance data
+        fetch(`/api/classes/${classId}/attendance`)
+            .then(response => response.json())
+            .then(attendanceData => {
+                const attendanceTableBody = document.getElementById('attendance-table').querySelector('tbody');
+                attendanceTableBody.innerHTML = '';
+
+                attendanceData.forEach(item => {
+                    const student = item.student;
+                    const attendance = item.attendance;
+
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="px-4 py-2">${student.firstName} ${student.lastName}</td>
+                        <td class="px-4 py-2">${student.contactNumber}</td>
+                        <td class="px-4 py-2">${student.classId}</td>
+                        <!-- Dates will be added here -->
+                    `;
+                    attendanceTableBody.appendChild(row);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching attendance data:', error);
+                const attendanceTableBody = document.getElementById('attendance-table').querySelector('tbody');
+                attendanceTableBody.innerHTML = 'Error loading attendance data.';
+            });
+    </script>
+</body>
+</html>
