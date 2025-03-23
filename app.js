@@ -14,8 +14,8 @@ const app = express();
 const PORT = process.env.PORT || 3002;
 
 // Load environment variables
-const EMAIL_USER = process.env.EMAIL_USER //'sundayschool@rccgcodyp3.org.ng';
-const EMAIL_PASS = process.env.EMAIL_PASS //'4T(oCE{zDL2+';
+const EMAIL_USER = process.env.EMAIL_USER 
+const EMAIL_PASS = process.env.EMAIL_PASS 
 
 // Nodemailer transporter
 const transporter = nodemailer.createTransport({
@@ -347,9 +347,7 @@ app.get('/trigger-attendance-emails', async (req, res) => {
   console.log('Manually triggering attendance email cron job');
 
   const today = new Date();
-  const yesterday = new Date(today);
-  yesterday.setDate(today.getDate() - 1);
-  const formattedDate = yesterday.toISOString().slice(0, 10);
+  const formattedDate = today.toISOString().slice(0, 10);
 
   try {
     // Get all attendance records for yesterday
