@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login</title>
+    <link href="/css/output.css" rel="stylesheet">
+</head>
+<body class="flex items-center justify-center h-screen bg-gray-100">
+    <div class="p-8 bg-white rounded shadow-md w-96">
+        <h1 class="mb-4 text-2xl font-semibold">Admin Login</h1>
+        <% if (locals.error) { %>
+            <p class="mb-2 text-sm text-red-500"><%= error %></p>
+        <% } %>
+        <form action="/admin/login" method="POST">
+            <div class="mb-4">
+                <label for="username" class="block mb-2 text-sm font-bold text-gray-700">Username:</label>
+                <input type="text" id="username" name="username" class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" required>
+            </div>
+            <div class="mb-6">
+                <label for="password" class="block mb-2 text-sm font-bold text-gray-700">Password:</label>
+                <input type="password" id="password" name="password" class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" required>
+            </div>
+            <button type="submit" class="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700 focus:outline-none focus:shadow-outline">Login</button>
+        </form>
+        <p class="mt-4 text-center">Don't have an account? <a href="/admin/register" class="text-blue-500 hover:text-blue-700">Register</a></p>
+    </div>
+</body>
+</html>

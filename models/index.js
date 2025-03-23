@@ -19,11 +19,13 @@ const sequelize = new Sequelize(
 const StudentModel = require('./Student');
 const AttendanceModel = require('./Attendance');
 const ClassModel = require('./Class');
+const AdminModel = require('./Admin');
 
 // Initialize models
 const Student = StudentModel(sequelize);
 const Attendance = AttendanceModel(sequelize);
 const Class = ClassModel(sequelize);
+const Admin = AdminModel(sequelize);
 
 // Set up associations
 Student.belongsTo(Class, { foreignKey: 'classId' });
@@ -40,4 +42,5 @@ module.exports = {
   Student,
   Attendance,
   Class,
+  Admin,
 };

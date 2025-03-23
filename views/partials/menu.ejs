@@ -1,35 +1,37 @@
-<nav class="bg-primary text-white py-4 mb-8 shadow-md">
-    <div class="container mx-auto px-4">
-        <div class="flex justify-between items-center">
+<nav class="py-4 mb-8 text-white shadow-md bg-primary">
+    <div class="container px-4 mx-auto">
+        <div class="flex items-center justify-between">
             <div class="flex items-center">
                 <img src="/images/rccglogo.png" alt="RCCG Logo" class="h-10 mr-3">
                 <div class="text-xl font-bold">Sunday School</div>
             </div>
             
             <!-- Mobile menu button -->
-            <button id="mobile-menu-button" class="md:hidden flex items-center px-3 py-2 border rounded text-white border-primary-light hover:bg-primary-light hover:border-white transition-colors duration-200">
-                <svg class="fill-current h-4 w-4" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+            <button id="mobile-menu-button" class="flex items-center px-3 py-2 text-white transition-colors duration-200 border rounded md:hidden border-primary-light hover:bg-primary-light hover:border-white">
+                <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                     <title>Menu</title>
                     <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z"/>
                 </svg>
             </button>
             
             <!-- Desktop menu -->
-            <ul class="hidden md:flex space-x-6">
-                <li><a href="/" class="hover:text-gray-200 transition-colors duration-200">Home</a></li>
-                <li><a href="/classes" class="hover:text-gray-200 transition-colors duration-200">Classes</a></li>
-                <li><a href="/reports" class="hover:text-gray-200 transition-colors duration-200">Reports</a></li>
-                <li><a href="/settings" class="hover:text-gray-200 transition-colors duration-200">Settings</a></li>
+            <ul class="hidden space-x-6 md:flex">
+                <li><a href="/" class="transition-colors duration-200 hover:text-gray-200">Home</a></li>
+                <li><a href="/classes" class="transition-colors duration-200 hover:text-gray-200">Classes</a></li>
+                <li><a href="/reports" class="transition-colors duration-200 hover:text-gray-200">Reports</a></li>
+                <li><a href="/settings" class="transition-colors duration-200 hover:text-gray-200">Settings</a></li>
+                <li><a href="/admin/logout" class="transition-colors duration-200 hover:text-gray-200">Logout</a></li>
             </ul>
         </div>
         
         <!-- Mobile menu, toggle classes based on menu state -->
-        <div id="mobile-menu" class="md:hidden hidden pt-4">
+        <div id="mobile-menu" class="hidden pt-4 md:hidden">
             <ul class="flex flex-col space-y-2">
-                <li><a href="/" class="block py-2 px-4 hover:bg-primary-light rounded transition-colors duration-200">Home</a></li>
-                <li><a href="/classes" class="block py-2 px-4 hover:bg-primary-light rounded transition-colors duration-200">Classes</a></li>
-                <li><a href="/reports" class="block py-2 px-4 hover:bg-primary-light rounded transition-colors duration-200">Reports</a></li>
-                <li><a href="/settings" class="block py-2 px-4 hover:bg-primary-light rounded transition-colors duration-200">Settings</a></li>
+                <li><a href="/" class="block px-4 py-2 transition-colors duration-200 rounded hover:bg-primary-light">Home</a></li>
+                <li><a href="/classes" class="block px-4 py-2 transition-colors duration-200 rounded hover:bg-primary-light">Classes</a></li>
+                <li><a href="/reports" class="block px-4 py-2 transition-colors duration-200 rounded hover:bg-primary-light">Reports</a></li>
+                <li><a href="/settings" class="block px-4 py-2 transition-colors duration-200 rounded hover:bg-primary-light">Settings</a></li>
+                <li><a href="/admin/logout" class="block px-4 py-2 transition-colors duration-200 rounded hover:bg-primary-light">Logout</a></li>
             </ul>
         </div>
     </div>

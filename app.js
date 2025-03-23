@@ -3,7 +3,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const path = require('path');
-const { sequelize, Class, Student, Attendance } = require('./models');
+const session = require('express-session');
+const { sequelize, Class, Student, Attendance, Admin } = require('./models');
 
 // Initialize Express app
 const app = express();
@@ -17,6 +18,12 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(session({
+  secret: process.env.SECRET,
+  resave: false,
+  saveUninitialized: false,
+  cookie: { secure: false } // set to true if using https
+}));
 
 // Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
@@ -49,14 +56,21 @@ createDatabase().then(async () => {
 // Sync database models
 // Using sync without alter: true to prevent modifying existing tables
 // This avoids the "Too many keys specified" error
-sequelize.sync().then(() => {
+sequelize.sync().then(async () => {
   console.log('Database synced');
+
+  // Create initial admin user if one doesn't exist
+  const admin = await Admin.findOne({ where: { username: 'admin' } });
+  if (!admin) {
+    await Admin.create({ username: 'admin', password: 'password' });
+    console.log('Initial admin user created');
+  }
 }).catch(err => {
   console.error('Error syncing database:', err);
 });
 
 // Routes
-app.get('/', async (req, res) => {
+app.get('/', isLoggedIn, async (req, res) => {
   try {
     const classes = await Class.findAll();
     
@@ -78,7 +92,7 @@ app.get('/', async (req, res) => {
   }
 });
 
-app.get('/classes', async (req, res) => {
+app.get('/classes', isLoggedIn, async (req, res) => {
   try {
     const classes = await Class.findAll();
     
@@ -100,7 +114,7 @@ app.get('/classes', async (req, res) => {
   }
 });
 
-app.get('/reports', async (req, res) => {
+app.get('/reports', isLoggedIn, async (req, res) => {
   try {
     const classes = await Class.findAll();
     
@@ -122,7 +136,7 @@ app.get('/reports', async (req, res) => {
   }
 });
 
-app.get('/settings', async (req, res) => {
+app.get('/settings', isLoggedIn, async (req, res) => {
   try {
     res.render('settings');
   } catch (error) {
@@ -131,7 +145,7 @@ app.get('/settings', async (req, res) => {
   }
 });
 
-app.get('/class/:classId', async (req, res) => {
+app.get('/class/:classId', isLoggedIn, async (req, res) => {
   const { classId } = req.params;
   const { error, message } = req.query;
   try {
@@ -173,6 +187,22 @@ app.get('/class/:classId', async (req, res) => {
 
 // API routes
 const routes = require('./routes');
+const adminRoutes = require('./routes/admin');
+app.use('/admin', adminRoutes);
+
+// Middleware to check if user is logged in
+function isLoggedIn(req, res, next) {
+  if (req.session.adminId) {
+    next();
+  } else {
+    res.redirect('/admin/login');
+  }
+}
+
+app.get('/admin/dashboard', isLoggedIn, (req, res) => {
+  res.render('admin/dashboard');
+});
+
 app.use('/api', routes);
 
 // Start server
