@@ -158,8 +158,10 @@ router.post('/attendance/today', async (req, res) => {
 
 // Route to register a new student
 router.post('/students', async (req, res) => {
+  let classId;
   try {
-    const { firstName, lastName, gender, dob, contactNumber, email, classId } = req.body;
+    const { firstName, lastName, gender, dob, contactNumber, email, classId: reqClassId } = req.body;
+    classId = reqClassId;
     const student = await Student.create({
       firstName,
       lastName,
@@ -170,7 +172,7 @@ router.post('/students', async (req, res) => {
       classId
     });
     console.log('New student registered:', student);
-    
+
     if (req.xhr || req.headers.accept.indexOf('json') > -1) {
       // If it's an AJAX request or expects JSON, return JSON
       return res.status(201).json(student);
@@ -181,7 +183,7 @@ router.post('/students', async (req, res) => {
   } catch (error) {
     console.error(error);
     let errorMessage = 'Error registering student';
-    
+
     // Check for unique constraint violation
     if (error.name === 'SequelizeUniqueConstraintError') {
       if (error.errors && error.errors.length > 0) {
@@ -193,7 +195,7 @@ router.post('/students', async (req, res) => {
         }
       }
     }
-    
+
     if (req.xhr || req.headers.accept.indexOf('json') > -1) {
       // If it's an AJAX request or expects JSON, return JSON error
       return res.status(400).json({ message: errorMessage });

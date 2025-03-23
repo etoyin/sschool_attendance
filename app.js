@@ -5,10 +5,57 @@ const cors = require('cors');
 const path = require('path');
 const session = require('express-session');
 const { sequelize, Class, Student, Attendance, Admin } = require('./models');
+const cron = require('node-cron');
+const nodemailer = require('nodemailer');
+const fs = require('fs').promises;
 
 // Initialize Express app
 const app = express();
 const PORT = process.env.PORT || 3002;
+
+// Load environment variables
+const EMAIL_USER = process.env.EMAIL_USER //'sundayschool@rccgcodyp3.org.ng';
+const EMAIL_PASS = process.env.EMAIL_PASS //'4T(oCE{zDL2+';
+
+// Nodemailer transporter
+const transporter = nodemailer.createTransport({
+  host: 'mail.rccgcodyp3.org.ng',
+  port: 465,
+  secure: true, // Use SSL
+  auth: {
+    user: EMAIL_USER,
+    pass: EMAIL_PASS,
+  },
+  tls: {
+    ciphers: 'SSLv3'
+  },
+  connectionTimeout: 10000, // milliseconds
+});
+
+// Function to send email
+async function sendEmail(to, subject, html, replacements) {
+  try {
+    let message = html;
+    for (const key in replacements) {
+      message = message.replace(new RegExp(`{{${key}}}`, 'g'), replacements[key]);
+    }
+
+    await transporter.sendMail({
+      from: `City of David Sunday School <${EMAIL_USER}>`,
+      to: to,
+      subject: subject,
+      html: message,
+    });
+    console.log(`Email sent to ${to}`);
+  } catch (error) {
+    console.error(`Error sending email to ${to}:`, error);
+  }
+}
+
+// Function to add a delay
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 // Set up view engine
 app.set('view engine', 'ejs');
@@ -55,7 +102,6 @@ createDatabase().then(async () => {
 
 // Sync database models
 // Using sync without alter: true to prevent modifying existing tables
-// This avoids the "Too many keys specified" error
 sequelize.sync().then(async () => {
   console.log('Database synced');
 
@@ -67,6 +113,97 @@ sequelize.sync().then(async () => {
   }
 }).catch(err => {
   console.error('Error syncing database:', err);
+});
+
+// Read email templates
+let presentEmailHtml;
+let absentEmailHtml;
+
+async function loadEmailTemplates() {
+  try {
+    presentEmailHtml = await fs.readFile('present_email.html', 'utf8');
+    absentEmailHtml = await fs.readFile('absent_email.html', 'utf8');
+  } catch (error) {
+    console.error('Error reading email templates:', error);
+  }
+}
+
+// Call loadEmailTemplates to load the email templates
+loadEmailTemplates();
+
+// Cron job to send attendance emails every Sunday at 3 PM
+cron.schedule('0 15 * * 0', async () => {
+  console.log('Running attendance email cron job');
+
+  const today = new Date();
+  const formattedDate = today.toISOString().slice(0, 10);
+
+  try {
+    // Get all attendance records for today
+    const attendanceRecords = await Attendance.findAll({
+      where: {
+        date: formattedDate,
+      },
+    });
+
+    // Separate students into present and absent groups
+    const presentStudentIds = attendanceRecords
+      .filter((record) => record.present)
+      .map((record) => record.studentId);
+    const absentStudentIds = attendanceRecords
+      .filter((record) => !record.present)
+      .map((record) => record.studentId);
+
+    // Get all students
+    const allStudents = await Student.findAll();
+
+    // Separate students into present and absent groups
+    const presentStudents = allStudents.filter((student) =>
+      presentStudentIds.includes(student.id)
+    );
+    const absentStudents = allStudents.filter((student) =>
+      !presentStudentIds.includes(student.id)
+    );
+
+    // Send emails to present students
+    for (const student of presentStudents) {
+      console.log(`Sending email to ${student.email}`);
+      await sendEmail(
+        student.email,
+        'Attendance Confirmation',
+        presentEmailHtml,
+        {
+          firstName: student.firstName,
+          lastName: student.lastName,
+          date: formattedDate,
+        }
+      );
+      await delay(1000); // Add a 1-second delay between emails
+    }
+
+    // Send emails to absent students
+    for (const student of absentStudents) {
+      console.log(`Sending email to ${student.email}`);
+      await sendEmail(
+        student.email,
+        'Attendance Alert',
+        absentEmailHtml,
+        {
+          firstName: student.firstName,
+          lastName: student.lastName,
+          date: formattedDate,
+        }
+      );
+      await delay(1000); // Add a 1-second delay between emails
+    }
+
+    console.log('Attendance emails sent successfully');
+  } catch (error) {
+    console.error('Error sending attendance emails:', error);
+  }
+}, {
+  scheduled: true,
+  timezone: 'Africa/Lagos' // Set the timezone to Africa/Lagos
 });
 
 // Routes
@@ -131,7 +268,7 @@ app.get('/reports', isLoggedIn, async (req, res) => {
     
     res.render('reports', { classes: classesWithStudentCount });
   } catch (error) {
-    console.error('Error fetching classes for reports:', error);
+    console.error('Error fetching classes:', error);
     res.render('reports', { classes: [] });
   }
 });
@@ -204,6 +341,78 @@ app.get('/admin/dashboard', isLoggedIn, (req, res) => {
 });
 
 app.use('/api', routes);
+
+// Add a route to manually trigger the cron job
+app.get('/trigger-attendance-emails', async (req, res) => {
+  console.log('Manually triggering attendance email cron job');
+
+  const today = new Date();
+  const yesterday = new Date(today);
+  yesterday.setDate(today.getDate() - 1);
+  const formattedDate = yesterday.toISOString().slice(0, 10);
+
+  try {
+    // Get all attendance records for yesterday
+    const attendanceRecords = await Attendance.findAll({
+      where: {
+        date: formattedDate,
+      },
+    });
+
+    // Separate students into present and absent groups
+    const presentStudentIds = attendanceRecords
+      .filter((record) => record.present)
+      .map((record) => record.studentId);
+    const absentStudentIds = attendanceRecords
+      .filter((record) => !record.present)
+      .map((record) => record.studentId);
+
+    // Get all students
+    const allStudents = await Student.findAll();
+
+    // Separate students into present and absent groups
+    const presentStudents = allStudents.filter((student) =>
+      presentStudentIds.includes(student.id)
+    );
+    const absentStudents = allStudents.filter((student) =>
+      !presentStudentIds.includes(student.id)
+    );
+
+    // Send emails to present students
+    for (const student of presentStudents) {
+      await sendEmail(
+        student.email,
+        'Attendance Confirmation',
+        presentEmailHtml,
+        {
+          firstName: student.firstName,
+          lastName: student.lastName,
+          date: formattedDate,
+        }
+      );
+    }
+
+    // Send emails to absent students
+    for (const student of absentStudents) {
+      await sendEmail(
+        student.email,
+        'Attendance Alert',
+        absentEmailHtml,
+        {
+          firstName: student.firstName,
+          lastName: student.lastName,
+          date: formattedDate,
+        }
+      );
+    }
+
+    console.log('Attendance emails sent successfully');
+    res.send('Attendance emails triggered successfully');
+  } catch (error) {
+    console.error('Error sending attendance emails:', error);
+    res.status(500).send('Error sending attendance emails');
+  }
+});
 
 // Start server
 app.listen(PORT, () => {
