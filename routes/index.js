@@ -206,7 +206,27 @@ router.post('/students', async (req, res) => {
   }
 });
 
-router.put('/api/students/:studentId', async (req, res) => {
+// Route to get individual student data
+router.get('/students/:studentId', async (req, res) => {
+  const { studentId } = req.params;
+  try {
+    const student = await Student.findByPk(studentId, {
+      include: [Class]
+    });
+    
+    if (!student) {
+      return res.status(404).json({ message: 'Student not found' });
+    }
+    
+    res.json(student);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error fetching student data' });
+  }
+});
+
+// Route to update student data
+router.put('/students/:studentId', async (req, res) => {
   const { studentId } = req.params;
   const { firstName, lastName, gender, dob, contactNumber, email, classId } = req.body;
   try {

@@ -14,22 +14,16 @@ const app = express();
 const PORT = process.env.PORT || 3002;
 
 // Load environment variables
-const EMAIL_USER = process.env.EMAIL_USER 
-const EMAIL_PASS = process.env.EMAIL_PASS 
+const EMAIL_USER = process.env.EMAIL_USER;
+const EMAIL_PASS = process.env.EMAIL_PASS;
 
-// Nodemailer transporter
+// Nodemailer transporter for Gmail
 const transporter = nodemailer.createTransport({
-  host: 'mail.rccgcodyp3.org.ng',
-  port: 465,
-  secure: true, // Use SSL
+  service: 'gmail',
   auth: {
     user: EMAIL_USER,
     pass: EMAIL_PASS,
   },
-  tls: {
-    ciphers: 'SSLv3'
-  },
-  connectionTimeout: 10000, // milliseconds
 });
 
 // Function to send email
@@ -118,11 +112,13 @@ sequelize.sync().then(async () => {
 // Read email templates
 let presentEmailHtml;
 let absentEmailHtml;
+let preparationEmailHtml;
 
 async function loadEmailTemplates() {
   try {
     presentEmailHtml = await fs.readFile('present_email.html', 'utf8');
     absentEmailHtml = await fs.readFile('absent_email.html', 'utf8');
+    preparationEmailHtml = await fs.readFile('preparation_email.html', 'utf8');
   } catch (error) {
     console.error('Error reading email templates:', error);
   }
@@ -201,6 +197,44 @@ cron.schedule('0 15 * * 0', async () => {
   } catch (error) {
     console.error('Error sending attendance emails:', error);
   }
+}, {
+  scheduled: true,
+  timezone: 'Africa/Lagos' // Set the timezone to Africa/Lagos
+});
+
+// Function to send preparation emails to all students
+async function sendPreparationEmails() {
+  console.log('Sending preparation emails to all students');
+  
+  try {
+    // Get all students
+    const allStudents = await Student.findAll();
+
+    // Send preparation emails to all students
+    for (const student of allStudents) {
+      console.log(`Sending preparation email to ${student.email}`);
+      await sendEmail(
+        student.email,
+        'Sunday School Preparation - Reserved Seat Awaits! 🎓',
+        preparationEmailHtml,
+        {
+          firstName: student.firstName,
+          lastName: student.lastName,
+        }
+      );
+      await delay(1000); // Add a 1-second delay between emails
+    }
+
+    console.log('Preparation emails sent successfully');
+  } catch (error) {
+    console.error('Error sending preparation emails:', error);
+  }
+}
+
+// Cron job to send preparation emails every Saturday at 6 PM
+cron.schedule('0 18 * * 6', async () => {
+  console.log('Running preparation email cron job');
+  await sendPreparationEmails();
 }, {
   scheduled: true,
   timezone: 'Africa/Lagos' // Set the timezone to Africa/Lagos
@@ -409,6 +443,19 @@ app.get('/trigger-attendance-emails', async (req, res) => {
   } catch (error) {
     console.error('Error sending attendance emails:', error);
     res.status(500).send('Error sending attendance emails');
+  }
+});
+
+// Route to manually trigger preparation emails
+app.get('/trigger-preparation-emails', async (req, res) => {
+  console.log('Manually triggering preparation email sending');
+  
+  try {
+    await sendPreparationEmails();
+    res.json({ message: 'Preparation emails sent successfully' });
+  } catch (error) {
+    console.error('Error sending preparation emails:', error);
+    res.status(500).json({ error: 'Failed to send preparation emails' });
   }
 });
 

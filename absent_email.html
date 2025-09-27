@@ -3,18 +3,56 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>We missed you in class today 😔😔</title>
+  <title>We missed you in class today 😔</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+  </style>
 </head>
-<body style="font-family: 'Arial', sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; margin: 0; padding: 0;">
-  <div style="width: 80%; margin: 20px auto; background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
-    <h1 style="color: rgb(41 23 110 / var(--tw-text-opacity));">We missed you in class today 😔😔</h1>
-    <p>Dear {{firstName}} {{lastName}},</p>
-    <p>We missed you in class today. We are concerned about your wellbeing and we trust all is well with you.</p>
-    <p>We hope to see you in class next week.</p>
-    <p>You can reply to this email for questions or counselling advice.</p>
-    <p>Do have a wonderful week ahead.</p>
-    <div style="margin-top: 20px; font-size: 0.8em; color: #777;">
-      <p style="font-style: italic;">God bless you.<br>City of David Sunday School</p>
+<body style="margin: 0; padding: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%); min-height: 100vh;">
+  <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
+    <!-- Header -->
+    <div style="background: #ffffff; border-radius: 16px 16px 0 0; padding: 40px 40px 30px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+      <h1 style="margin: 0; font-size: 28px; font-weight: 600; color: #2c3e50; line-height: 1.3;">We Missed You Today 😔</h1>
+      <p style="margin: 10px 0 0; font-size: 16px; color: #7f8c8d; font-weight: 400;">Your seat was waiting for you</p>
+    </div>
+    
+    <!-- Main Content -->
+    <div style="background: #ffffff; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+      <div style="margin-bottom: 30px;">
+        <p style="margin: 0 0 20px; font-size: 18px; color: #2c3e50; font-weight: 500;">Dear {{firstName}} {{lastName}},</p>
+        
+        <div style="background: linear-gradient(135deg, #fff5f5, #fed7d7); border-left: 4px solid #ff6b6b; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <p style="margin: 0 0 15px; font-size: 16px; color: #2c3e50; line-height: 1.6;">We noticed you weren't with us in class today, and we genuinely <strong>missed your presence</strong>. Our Sunday School family feels incomplete without you.</p>
+          <p style="margin: 0; font-size: 16px; color: #2c3e50; line-height: 1.6;">We're concerned about your wellbeing and trust that all is well with you and your loved ones.</p>
+        </div>
+        
+        <div style="background: #e8f5e8; border: 1px solid #4CAF50; border-radius: 8px; padding: 20px; margin: 25px 0;">
+          <p style="margin: 0 0 10px; font-size: 16px; color: #2e7d32; font-weight: 600;">🤗 We're Here for You</p>
+          <p style="margin: 0 0 15px; font-size: 15px; color: #1b5e20; line-height: 1.5;">Whether you need prayer, counseling, or just someone to talk to, please don't hesitate to reach out. Reply to this email anytime!</p>
+          <p style="margin: 0; font-size: 15px; color: #1b5e20; line-height: 1.5;"><strong>We hope to see you next Sunday</strong> as we continue growing in faith together.</p>
+        </div>
+        
+        <div style="background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; padding: 20px; margin: 25px 0;">
+          <p style="margin: 0 0 10px; font-size: 16px; color: #856404; font-weight: 600;">📖 Missed Today's Lesson?</p>
+          <p style="margin: 0; font-size: 15px; color: #6c5ce7; line-height: 1.5;">Don't worry! We'd love to catch you up on what we learned today. Feel free to ask us about the lesson.</p>
+        </div>
+        
+        <p style="margin: 25px 0 0; font-size: 16px; color: #2c3e50; line-height: 1.6;">Do have a <strong>wonderful</strong> and <strong>blessed</strong> week ahead. You are always in our thoughts and prayers.</p>
+      </div>
+    </div>
+    
+    <!-- Footer -->
+    <div style="background: #2c3e50; border-radius: 0 0 16px 16px; padding: 30px 40px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+      <div style="border-top: 1px solid #34495e; padding-top: 20px;">
+        <p style="margin: 0 0 8px; font-size: 16px; color: #ecf0f1; font-weight: 500;">God bless you abundantly,</p>
+        <div style="display: flex; align-items: center; justify-content: center; gap: 12px;">
+          <img src="https://codsundayschool.marcorybaptistschools.org/images/rccglogo.png" alt="RCCG Logo" style="width: 152px; height: auto; border-radius: 4px;">
+          <p style="margin: 0; font-size: 18px; color: #3498db; font-weight: 600;">City of David Sunday School</p>
+        </div>
+        <div style="margin-top: 20px;">
+          <p style="margin: 0; font-size: 13px; color: #95a5a6; line-height: 1.4;">"The Lord your God is with you, the Mighty Warrior who saves. He will take great delight in you." - Zephaniah 3:17</p>
+        </div>
+      </div>
     </div>
   </div>
 </body>

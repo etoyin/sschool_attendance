@@ -226,6 +226,7 @@
                             <table class="min-w-full bg-white border-collapse">
                                 <thead>
                                     <tr class="text-white bg-gradient-to-r from-primary to-primary-dark">
+                                        <th class="px-6 py-3 text-sm font-semibold tracking-wider text-center uppercase border-b border-gray-200">Actions</th>
                                         <th class="px-6 py-3 text-sm font-semibold tracking-wider text-left uppercase border-b border-gray-200">Name</th>
                                         <th class="px-6 py-3 text-sm font-semibold tracking-wider text-left uppercase border-b border-gray-200">Phone Number</th>
                                         <th class="px-6 py-3 text-sm font-semibold tracking-wider text-left uppercase border-b border-gray-200">Class</th>
@@ -234,13 +235,19 @@
                                                 <th class="px-6 py-3 text-sm font-semibold tracking-wider text-center uppercase border-b border-gray-200"><%= date %></th>
                                             <% }); %>
                                         <% } %>
-                                        <th class="px-6 py-3 text-sm font-semibold tracking-wider text-right uppercase border-b border-gray-200">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-gray-200">
                                     <% if (attendanceData && attendanceData.length > 0) { %>
                                         <% attendanceData.forEach((item, index) => { %>
                                             <tr class="<%= index % 2 === 0 ? 'bg-white' : 'bg-gray-50' %> hover:bg-gray-100 transition-all duration-150">
+                                                <td class="px-6 py-4 text-sm font-medium text-center whitespace-nowrap">
+                                                    <button type="button" onclick="openEditModal('<%= item.student.id %>')" class="inline-flex items-center justify-center w-8 h-8 text-blue-600 transition-colors duration-200 bg-blue-100 rounded-full hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50" title="Edit Student">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                                        </svg>
+                                                    </button>
+                                                </td>
                                                 <td class="px-6 py-4 text-sm font-medium text-gray-900 whitespace-nowrap"><%= item.student.firstName %> <%= item.student.lastName %></td>
                                                  <td class="px-6 py-4 text-sm text-gray-500 whitespace-nowrap"><%= item.student.contactNumber || 'N/A' %></td>
                                                 <td class="px-6 py-4 text-sm text-gray-500 whitespace-nowrap"><%= classData.name %></td>
@@ -260,11 +267,6 @@
                                                         </td>
                                                     <% }); %>
                                                 <% } %>
-                                                <td class="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
-                                                    <button type="button" onclick="openEditModal('<%= item.student.id %>')" class="px-4 py-2 font-bold text-white transition-colors duration-200 bg-blue-500 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
-                                                        Edit
-                                                    </button>
-                                                </td>
                                             </tr>
                                         <% }); %>
                                     <% } else { %>
@@ -430,12 +432,22 @@
                     <input type="email" id="email-edit" name="email" class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline">
                     <p class="mt-1 text-sm text-gray-600">Must be unique. Leave blank if not available.</p>
                 </div>
-                <input type="hidden" name="classId" value="<%= classData.id %>">
+                <div class="mb-4">
+                    <label for="classId-edit" class="block mb-2 text-sm font-bold text-gray-700">Class:</label>
+                    <select id="classId-edit" name="classId" class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" required>
+                        <!-- Classes will be populated dynamically -->
+                    </select>
+                </div>
                 <div class="flex justify-end">
                     <button type="submit" class="px-4 py-2 font-bold text-white transition-colors duration-200 rounded bg-primary hover:bg-primary-light focus:outline-none focus:ring-2 focus:ring-primary-light focus:ring-opacity-50">Update</button>
                 </div>
             </form>
         </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="fixed top-4 right-4 z-50 space-y-2">
+        <!-- Toast messages will be dynamically inserted here -->
     </div>
 
     <!-- Include external JavaScript file -->
