@@ -82,7 +82,7 @@ async function testConnection() {
 // Create database if it doesn't exist
 async function createDatabase() {
   try {
-    await sequelize.query('CREATE DATABASE IF NOT EXISTS school_attendance;');
+    await sequelize.query('CREATE DATABASE IF NOT EXISTS nihtxqee_cod;');
     console.log('Database created or already exists.');
   } catch (error) {
     console.error('Error creating database:', error);
